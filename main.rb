@@ -3,8 +3,8 @@ require 'rainbow'
 require 'io/console'
 require 'tty-prompt'
 
-def setup_board
-    board = Array.new(20){Array.new(80)}
+def setup_board(x,y)
+    board = Array.new(x){Array.new(y)}
     board.each_with_index do |row, row_index|
         row.each_with_index do |cell, cell_index|
             board[row_index][cell_index] = Cell.new()
@@ -92,23 +92,26 @@ def fill(board)
     board.each_with_index do |row, row_index|
         row.each_with_index do |cell, cell_index|
             cell.state = rand(0..1)
-            # cell.state = j[i]
-            # i += 1
         end
     end
 end
 
-initial_board  = setup_board()
-initial_board = fill(initial_board)
-i = 0
-loop do 
-    i = i+1
-    display_board(initial_board)
-    sleep 0.2
-    initial_board = generate(initial_board)
-    puts "\e[H\e[2J"
-    print "\n"
-    if i == 20
-        break
+def display_loop
+    initial_board  = setup_board(20,80)
+    initial_board = fill(initial_board)
+    generation = 0
+    loop do
+        char = STDIN.getch
+        puts "\e[H\e[2J"
+        display_board(initial_board)
+        initial_board = generate(initial_board)
+        puts "\nGenerations: #{generation}"
+        puts Rainbow("██").red + " lasted 1 or more generations " + Rainbow("██").green + " lasted 3 or more generations "
+        puts "Press any key to for another generation, Press q to exit " 
+        generation += 1
+        break if char == 'q'
     end
 end
+
+t = Thread.new{display_loop}
+t.join
