@@ -93,7 +93,7 @@ def fill(board)
 end
 
 def generate(board)
-    new_board = board
+    new_board = Marshal.load(Marshal.dump(board))
     board.each_with_index do |row, row_index|
         row.each_with_index do |cell, cell_index|
             neighbour_count = neighbourCounter(board,row_index,cell_index)
