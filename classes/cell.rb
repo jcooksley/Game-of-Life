@@ -6,6 +6,9 @@ class Cell
         @life = 0
     end
 
+    def initialize_copy(original_cell)
+        @state = original_cell.state.dup
+    end
     def alive
         @state = 1
     end
