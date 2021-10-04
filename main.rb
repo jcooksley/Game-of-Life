@@ -8,8 +8,8 @@ data_hash = JSON.parse(file)
 
 prompt = TTY::Prompt.new
 
-def setup_board(x,y)
-    board = Array.new(x){Array.new(y)}
+def setup_board(y,x)
+    board = Array.new(y){Array.new(x)}
     board.each_with_index do |row, row_index|
         row.each_with_index do |cell, cell_index|
             board[row_index][cell_index] = Cell.new()
@@ -79,14 +79,18 @@ def neighbourCounter(board_s,row, cell)
     return neighbour_count
 end
 
-def fill(board)
-    filled_board = board.dup
+def fill(board, cells)
+    filled_board = Marshal.load(Marshal.dump(board))
     i=0
-    board.each_with_index do |row, row_index|
+    filled_board.each_with_index do |row, row_index|
         row.each_with_index do |cell, cell_index|
-            # cell.state = cells[row_index][cell_index]
-            # i += 1
-            cell.state = rand(0..1)
+            if cells == "r"
+                cell.state = rand(0..1)
+            else
+                cell.state = cells[i].to_i
+                puts cells[i]
+                i += 1 
+            end
         end
     end
     return filled_board
@@ -162,6 +166,18 @@ end
 
 # display_loop(test_board)
 
+def custom_board_input(width,height)
+    prompt = TTY::Prompt.new
+    cus_board = ""
+    for i in 1..height do
+        row_input = prompt.ask("Input #{width} cells, 0 = dead 1 = alive \n")
+        cus_board += row_input
+    end
+    puts cus_board
+    return cus_board
+end
+
+
 def menu
     prompt = TTY::Prompt.new
     file =  File.read('./patterns.json')
@@ -170,8 +186,15 @@ def menu
     if choice == "custom"
         width = prompt.slider("Width", min: 1, max: 100, step: 1)
         height = prompt.slider("Height", min: 1, max: 100, step: 1)
-        initial_board = fill(setup_board(width,height))
-        display_loop(initial_board)
+        custom_board = setup_board(height,width)
+        ran_or_not = prompt.select("Would you like a to input your own data or generate a random board?", %w(input random))
+        if ran_or_not == "input"
+             custom_board = fill(custom_board,custom_board_input(width,height))
+             display_loop(custom_board)
+        elsif ran_or_not == "random"
+            custom_board = fill(custom_board, "r")
+            display_loop(custom_board)
+        end
         prompt.ask("Would you like to save your board?")
     elsif choice == "pre-set"
         pre_set_choices = data_hash
