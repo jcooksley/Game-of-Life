@@ -171,20 +171,27 @@ def menu
     prompt = TTY::Prompt.new
     file =  File.read('./patterns.json')
     data_hash = JSON.parse(file)
+    puts data_hash
     choice = prompt.select("Would you like a pre-set board or custom?", %w(pre-set custom))
     if choice == "custom"
-        width = prompt.slider("Width", min: 1, max: 100, step: 1)
-        height = prompt.slider("Height", min: 1, max: 100, step: 1)
+        width = prompt.slider("Width", min: 1, max: 100, step: 1, default:1)
+        height = prompt.slider("Height", min: 1, max: 100, step: 1, default:1)
         custom_board = setup_board(height,width)
         ran_or_not = prompt.select("Would you like a to input your own data or generate a random board?", %w(input random))
         if ran_or_not == "input"
-             custom_board = fill(custom_board,custom_board_input(width,height))
+            board_input = custom_board_input(width,height)
+             custom_board = fill(custom_board,board_input)
              display_loop(custom_board)
         elsif ran_or_not == "random"
             custom_board = fill(custom_board, "r")
             display_loop(custom_board)
         end
-        prompt.ask("Would you like to save your board?")
+        save = prompt.ask("Would you like to save your board? y/n")
+        if save == "y"
+            name = prompt.ask("What do you want to call your board?")
+            data_hash[name] = {"width" => width, "height" => height, "board" => board_input}
+            File.write('./patterns.json', JSON.dump(data_hash))
+        end
     elsif choice == "pre-set"
         pre_set_choices = data_hash
         pre_set_choice  = prompt.select("Pre-sets", pre_set_choices)
