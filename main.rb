@@ -73,7 +73,7 @@ def neighbourCounter(board_s,row, cell)
             neighbour_count += board_s[row + 1][cell + 1].state
             neighbour_count += board_s[row - 1][cell + 1].state
             neighbour_count += board_s[row - 1][cell - 1].state
-            neighbour_count += board_s[row + 1][cell + 1].state
+            neighbour_count += board_s[row + 1][cell - 1].state
         end
     end
     return neighbour_count
@@ -88,7 +88,6 @@ def fill(board, cells)
                 cell.state = rand(0..1)
             else
                 cell.state = cells[i].to_i
-                puts cells[i]
                 i += 1 
             end
         end
@@ -155,16 +154,6 @@ def display_loop(board)
     end
 end
 
-# stripe_board = [[0,0,0],[1,1,1],[0,0,0]]
-# test_board = fill(setup_board(3,3),stripe_board) 
-# test_board.each_with_index do |row, row_index|
-#     row.each_with_index do |cell, cell_index|
-#         puts cell
-#         puts cell.state
-#     end
-# end
-
-# display_loop(test_board)
 
 def custom_board_input(width,height)
     prompt = TTY::Prompt.new
@@ -202,8 +191,7 @@ def menu
         width = pre_set_choice['width']
         height = pre_set_choice['height']
         cells = pre_set_choice['board']
-        preset_board = setup_board(width,height)
-        puts initial_board
+        preset_board = setup_board(height,width)
         initial_board = fill(preset_board,cells)
         display_loop(initial_board)
     end
