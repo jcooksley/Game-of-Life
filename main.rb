@@ -137,8 +137,6 @@ def display_board (board)
     end
 end
 
-
-
 def display_loop(board)
     generation = 0
     loop do
@@ -154,7 +152,6 @@ def display_loop(board)
     end
 end
 
-
 def custom_board_input(width,height)
     prompt = TTY::Prompt.new
     cus_board = ""
@@ -167,18 +164,6 @@ def custom_board_input(width,height)
 end
 
 
-ARGV.each do |arg|
-    file =  File.read('./patterns.json')
-    data_hash = JSON.parse(file)
-    width = data_hash['width']
-    height = data_hash['height']
-    cells = data_hash['board']
-    if arg == "stripe"
-        stripe_board = setup_board(height,width)
-        stripe_board = fill(stripe_board,cells)
-        display_loop(stripe_board)
-    end
-end
 
 
 def custom
@@ -231,7 +216,32 @@ def menu
         menu()
     end
 end
-menu()
+
+ARGV.each do |arg|
+    file =  File.read('./patterns.json')
+    data_hash = JSON.parse(file)
+    if arg == "start"
+        menu()
+    elsif arg == "stripe"
+        cells = data_hash['stripe']['board']
+        width = data_hash['stripe']['width']
+        height = data_hash['stripe']['height']
+        stripe_board = setup_board(height,width)
+        stripe_board = fill(stripe_board,cells)
+        display_loop(stripe_board)
+    elsif arg == "101"
+        cells = data_hash['101']['board']
+        width = data_hash['101']['width']
+        height = data_hash['101']['height']
+        one_o_one_board = setup_board(height,width)
+        one_o_one_board = fill(one_o_one_board,cells)
+        display_loop(one_o_one_board)
+    elsif arg == "custom"
+        custom()
+    end
+end
+
+
 
 
 
