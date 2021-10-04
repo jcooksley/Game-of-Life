@@ -171,7 +171,6 @@ def menu
     prompt = TTY::Prompt.new
     file =  File.read('./patterns.json')
     data_hash = JSON.parse(file)
-    puts data_hash
     choice = prompt.select("Would you like a pre-set board or custom?", %w(pre-set custom))
     if choice == "custom"
         width = prompt.slider("Width", min: 1, max: 100, step: 1, default:1)
@@ -201,6 +200,11 @@ def menu
         preset_board = setup_board(height,width)
         initial_board = fill(preset_board,cells)
         display_loop(initial_board)
+    end
+    display_end = prompt.select("Exit or return to Menu?", %w(exit menu))
+    if display_end == "menu"
+        puts "\e[H\e[2J"
+        menu()
     end
 end
 menu()
