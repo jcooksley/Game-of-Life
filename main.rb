@@ -167,39 +167,63 @@ def custom_board_input(width,height)
 end
 
 
-def menu
+ARGV.each do |arg|
+    file =  File.read('./patterns.json')
+    data_hash = JSON.parse(file)
+    width = data_hash['width']
+    height = data_hash['height']
+    cells = data_hash['board']
+    if arg == "stripe"
+        stripe_board = setup_board(height,width)
+        stripe_board = fill(stripe_board,cells)
+        display_loop(stripe_board)
+    end
+end
+
+
+def custom
+    prompt = TTY::Prompt.new
+    width = prompt.slider("Width", min: 1, max: 100, step: 1, default:1)
+    height = prompt.slider("Height", min: 1, max: 100, step: 1, default:1)
+    custom_board = setup_board(height,width)
+    ran_or_not = prompt.select("Would you like a to input your own data or generate a random board?", %w(input random))
+    if ran_or_not == "input"
+        board_input = custom_board_input(width,height)
+        custom_board = fill(custom_board,board_input)
+        display_loop(custom_board)
+    elsif ran_or_not == "random"
+        custom_board = fill(custom_board, "r")
+        display_loop(custom_board)
+    end
+    save = prompt.ask("Would you like to save your board? y/n")
+    if save == "y"
+        name = prompt.ask("What do you want to call your board?")
+        data_hash[name] = {"width" => width, "height" => height, "board" => board_input}
+        File.write('./patterns.json', JSON.dump(data_hash))
+    end
+end
+
+def pre_set
     prompt = TTY::Prompt.new
     file =  File.read('./patterns.json')
     data_hash = JSON.parse(file)
+    pre_set_choices = data_hash
+    pre_set_choice  = prompt.select("Pre-sets", pre_set_choices)
+    width = pre_set_choice['width']
+    height = pre_set_choice['height']
+    cells = pre_set_choice['board']
+    preset_board = setup_board(height,width)
+    initial_board = fill(preset_board,cells)
+    display_loop(initial_board)
+end
+
+def menu
+    prompt = TTY::Prompt.new
     choice = prompt.select("Would you like a pre-set board or custom?", %w(pre-set custom))
     if choice == "custom"
-        width = prompt.slider("Width", min: 1, max: 100, step: 1, default:1)
-        height = prompt.slider("Height", min: 1, max: 100, step: 1, default:1)
-        custom_board = setup_board(height,width)
-        ran_or_not = prompt.select("Would you like a to input your own data or generate a random board?", %w(input random))
-        if ran_or_not == "input"
-            board_input = custom_board_input(width,height)
-             custom_board = fill(custom_board,board_input)
-             display_loop(custom_board)
-        elsif ran_or_not == "random"
-            custom_board = fill(custom_board, "r")
-            display_loop(custom_board)
-        end
-        save = prompt.ask("Would you like to save your board? y/n")
-        if save == "y"
-            name = prompt.ask("What do you want to call your board?")
-            data_hash[name] = {"width" => width, "height" => height, "board" => board_input}
-            File.write('./patterns.json', JSON.dump(data_hash))
-        end
+        custom()
     elsif choice == "pre-set"
-        pre_set_choices = data_hash
-        pre_set_choice  = prompt.select("Pre-sets", pre_set_choices)
-        width = pre_set_choice['width']
-        height = pre_set_choice['height']
-        cells = pre_set_choice['board']
-        preset_board = setup_board(height,width)
-        initial_board = fill(preset_board,cells)
-        display_loop(initial_board)
+      pre_set()
     end
     display_end = prompt.select("Exit or return to Menu?", %w(exit menu))
     if display_end == "menu"
