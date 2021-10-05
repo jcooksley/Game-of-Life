@@ -138,15 +138,15 @@ def display_board (board)
 end
 
 def display_loop(board)
-    generation = 0
+    generation = 1
     loop do
-        char = STDIN.getch
         puts "\e[H\e[2J"
         display_board(board)
         board = generate(board)
         puts "\nGenerations: #{generation}"
         puts Rainbow("██").red + " lasted 1 or more generations " + Rainbow("██").green + " lasted 3 or more generations "
         puts "Press any key to for another generation, Press q to exit " 
+        char = STDIN.getch
         generation += 1
         break if char == 'q'
     end
