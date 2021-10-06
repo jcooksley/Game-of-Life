@@ -33,7 +33,7 @@ once settings have been set the game of life will start generating, showing how 
 
 ## Control Flow Diagram 
 	
-![CFD](docs/CFD.png "CFD")
+https://i.imgur.com/ROpXmYv.png
 
 ## Help Documentation
 
