@@ -5,7 +5,11 @@ require 'tty-prompt'
 require 'json'
 
 def read_file
-    file =  File.read('./patterns.json')
+    begin
+        file =  File.read('./patterns.json')
+    rescue LoadError => each
+        print_exception(e, true)
+    end
     data_hash = JSON.parse(file)
     return data_hash
 end
@@ -159,7 +163,10 @@ def custom_board_input(width,height)
     prompt = TTY::Prompt.new
     cus_board = ""
     for i in 1..height do
-        row_input = prompt.ask("Input #{width} cells, 0 = dead 1 = alive \n")
+        row_input = prompt.ask("Input #{width} cells, 0 = dead 1 = alive \n") do |q|
+            q.validate(/([0-1]){#{width}}/, "incorrect data make sure you input #{width} cells and only use 0:dead and 1:alive")
+        end
+            
         cus_board += row_input
     end
     puts cus_board
