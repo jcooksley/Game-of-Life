@@ -192,6 +192,7 @@ def custom
 end
 
 def pre_set
+    prompt = TTY::Prompt.new
     data_hash = read_file()
     pre_set_choices = data_hash
     pre_set_choice  = prompt.select("Pre-sets", pre_set_choices)
