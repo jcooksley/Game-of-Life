@@ -3,9 +3,12 @@ require 'rainbow'
 require 'io/console'
 require 'tty-prompt'
 require 'json'
-file =  File.read('./patterns.json')
-data_hash = JSON.parse(file)
 
+def read_file
+    file =  File.read('./patterns.json')
+    data_hash = JSON.parse(file)
+    return data_hash
+end
 prompt = TTY::Prompt.new
 
 def setup_board(y,x)
@@ -189,9 +192,7 @@ def custom
 end
 
 def pre_set
-    prompt = TTY::Prompt.new
-    file =  File.read('./patterns.json')
-    data_hash = JSON.parse(file)
+    data_hash = read_file()
     pre_set_choices = data_hash
     pre_set_choice  = prompt.select("Pre-sets", pre_set_choices)
     width = pre_set_choice['width']
@@ -218,8 +219,7 @@ def menu
 end
 
 ARGV.each do |arg|
-    file =  File.read('./patterns.json')
-    data_hash = JSON.parse(file)
+    data_hash = read_file()
     if arg == "start"
         menu()
     elsif arg == "stripe"
